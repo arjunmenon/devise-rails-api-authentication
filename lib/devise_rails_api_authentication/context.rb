@@ -7,25 +7,25 @@ module DeviseRailsApiAuthentication
     included do
       include Devise::Controllers::Helpers
       include ActionController::RespondWith
-      before_action :authenticate_user_from_token!
+      before_action :authenticate_admin_from_token!
     end
 
-    def authenticate_user_from_token!
+    def authenticate_admin_from_token!
       return if Rails.env.development?
 
-      if user && Devise.secure_compare(user.authentication_token, user_token)
-        warden.set_user(user, scope: :user, store: false)
+      if admin && Devise.secure_compare(admin.authentication_token, admin_token)
+        warden.set_admin(admin, scope: :admin, store: false)
       else
         not_authenticated_error
       end
     end
 
-    def user_email
-      request.headers['HTTP_X_USER_EMAIL']
+    def admin_email
+      request.headers['HTTP_X_ADMIN_EMAIL']
     end
 
-    def user_token
-      request.headers['HTTP_X_USER_TOKEN']
+    def admin_token
+      request.headers['HTTP_X_ADMIN_TOKEN']
     end
 
     def not_authenticated_error
@@ -33,7 +33,7 @@ module DeviseRailsApiAuthentication
       head status: 401
     end
 
-    def user
+    def admin
       fail NotImplementedError
     end
   end
